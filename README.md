@@ -21,7 +21,7 @@ terraform terraform plan
 
 https://github.com/gi949/homework_lesson4
 
-Создание и настройка кластера OpenSearch и Dashboard sописана в
+Создание и настройка кластера OpenSearch и Dashboard описана в
 
 https://github.com/gi949/homework_lesson7
 
