@@ -39,9 +39,21 @@ ansible-playbook kafka_ins.yml
 
 ![kafka-1](https://github.com/gi949/homework_lesson8/assets/94520051/222c8256-9ab8-4954-b054-8e09c69d4bb3)
 
-Устанавливаем и настраиваем кластер kafka
+Устанавливаем и настраиваем logstash
 
+ansible-playbook logstash_ins.yml
 
+Устанавливаем и настраиваем агенты filebeats
+
+ansible-playbook filebeats_ins.yml
+
+Подключаемся к веб-интерфейсу Dashboards по <внешний ip:5601> под логином admin.
+
+Проверяем, что логи от агентов поступают:
+
+![all-ind](https://github.com/gi949/homework_lesson8/assets/94520051/67c52140-1cc3-45ee-9c09-c273a0586d9b)
+
+Создаем индекс для логов из топика nginx
 
 
 
