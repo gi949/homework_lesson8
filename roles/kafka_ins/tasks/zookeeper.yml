@@ -1,0 +1,88 @@
+- name: Install packages
+  ansible.builtin.yum: name={{ item }} state=present
+  with_items:
+    - ca-certificates
+    - wget
+    - tar
+    - nc
+
+- name: update-ca-trust
+  ansible.builtin.shell: update-ca-trust
+  ignore_errors: yes
+
+- name: create user zookeeper
+  ansible.builtin.shell: useradd -r -c 'Zookeeper service' zookeeper
+  ignore_errors: yes
+
+- name: Make directory for zookeeper
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: zookeeper
+    group: zookeeper
+  loop:
+  - /opt/zookeeper
+  - /opt/zookeeper/data
+  - /var/log/zookeeper
+
+- name: download zookeeper package
+  ansible.builtin.get_url:
+    url: "https://dlcdn.apache.org/zookeeper/zookeeper-3.7.2/apache-zookeeper-3.7.2-bin.tar.gz"
+    dest: "/tmp/apache-zookeeper-bin.tar.gz"
+  register: download
+
+- name: unarchive zookeeper
+  ansible.builtin.unarchive:
+    src: "/tmp/apache-zookeeper-bin.tar.gz"
+    dest: "/opt/zookeeper"
+    remote_src: true
+    extra_opts: 
+    - "--strip-components=1"
+    owner: zookeeper
+    group: zookeeper
+  when: download.changed
+
+- name: copy systemd unit file
+  ansible.builtin.template:
+    src: zookeeper.service.j2
+    dest: /etc/systemd/system/zookeeper.service
+#  when: download.changed
+
+- name: daemon-reload
+  ansible.builtin.shell: systemctl daemon-reload
+  ignore_errors: yes
+
+- name: copy main config
+  ansible.builtin.template:
+    src: zoo.cfg.j2
+    dest: "/opt/zookeeper/conf/zoo.cfg"
+    owner: zookeeper
+    group: zookeeper  
+#  when: download.changed
+  notify: restart zookeeper
+
+- name: Configure zookeeper cluster
+  ansible.builtin.template:
+    src: zoo.cfg.dynamic.j2
+    dest: "/opt/zookeeper/conf/zoo.cfg.dynamic"
+    owner: zookeeper
+    group: zookeeper
+#  when: download.changed
+  notify: restart zookeeper
+
+- name: Zookeeper | Configure id
+  ansible.builtin.copy:
+    dest: "/opt/zookeeper/data/myid"
+    content: "{{ id }}"
+    owner: zookeeper
+    group: zookeeper
+  #when: download.changed
+  notify: restart zookeeper
+
+- name: Start zookeeper service
+  ansible.builtin.systemd:
+    name: zookeeper
+    state: restarted
+    enabled: true
+    daemon_reload: true
+  when: download.changed

@@ -1,0 +1,21 @@
+input {
+    kafka {
+      type => "wordpress"
+      bootstrap_servers => "{{ db1_ip }}:9092,{{ db2_ip }}:9092,{{ db3_ip }}:9092"
+      topics => "wordpress"
+    }
+}
+
+
+output {
+  if [type] == "wordpress" {
+    opensearch {
+      hosts => "https://{{ os1_ip }}:9200"
+      user => "admin"
+      password => "Test123"
+      index => "wordpress-%{+YYYY.MM.dd}"
+      ssl_certificate_verification => false
+    }
+  }
+}
+

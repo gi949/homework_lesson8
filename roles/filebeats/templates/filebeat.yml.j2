@@ -1,0 +1,35 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/nginx/*.log
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+setup.template.settings:
+  index.number_of_shards: 1
+setup.kibana:
+output.kafka:
+ hosts: ["{{ db1_ip }}:9092","{{ db2_ip }}:9092","{{ db3_ip }}:9092"]
+ topic: "{{ topic}}"
+ codec.format:
+   string: '%{[@timestamp]} %{[message]}'
+ partition.round_robin:
+   reachable_only: false
+ required_acks: 1
+ compression: gzip
+ max_message_bytes: 1000000
+ close_inactive: 10m
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat.log
+  keepfiles: 7

@@ -1,0 +1,6 @@
+broker.id={{ id }}
+#listeners=PLAINTEXT://0.0.0.0:9092
+#advertised.listeners=PLAINTEXT://{{ db1_ip }}:9092
+log.dirs=/data/kafka-data/kafka-logs
+zookeeper.connect={{ db1_ip }}:2181,{{ db2_ip }}:2181,{{ db3_ip }}:2181/kafka
+zookeeper.connection.timeout.ms=18000

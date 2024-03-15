@@ -1,0 +1,77 @@
+- name: create user kafka
+  ansible.builtin.shell: useradd -r -c 'Kafka broker user service' kafka
+  ignore_errors: yes
+
+
+- name: Make directory for Kafka
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: kafka
+    group: kafka
+  loop:
+  - /opt/kafka
+  - /data/kafka-data
+  - /data/kafka-data/kafka-logs
+
+- name: Download kafka package
+  ansible.builtin.get_url:
+    url: "https://dlcdn.apache.org/kafka/3.6.1/kafka_2.13-3.6.1.tgz"
+    dest: /tmp/kafka.tgz
+  register: download
+
+- name: Unarchive kafka
+  ansible.builtin.unarchive:
+    src: /tmp/kafka.tgz
+    dest: /opt/kafka
+    remote_src: true
+    extra_opts: 
+    - "--strip-components=1"
+    owner: kafka
+    group: kafka
+  when: download.changed
+
+- name: Template kafka conf file
+  ansible.builtin.template:
+    src: server.properties.j2
+    dest: /opt/kafka/config/server.properties
+  notify: restart kafka
+
+- name: Template kafka systemd unit file
+  ansible.builtin.template:
+    src: kafka.service.j2
+    dest: /etc/systemd/system/kafka.service
+  #when: download.changed
+  notify: restart kafka
+
+- name: daemon-reload
+  ansible.builtin.shell: systemctl daemon-reload
+  ignore_errors: yes
+
+- name: Kafka | Started kafka
+  ansible.builtin.systemd:
+    name: kafka
+    state: restarted
+    enabled: true
+    daemon_reload: true
+  when: download.changed
+
+- name: Kafka | Wait for kafka to startup
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: "9092"
+    delay: 5
+    connect_timeout: 1
+    timeout: 180
+  when: download.changed
+      
+- name: Kafka | Add topics
+  ansible.builtin.shell:
+    cmd: |
+      /opt/kafka/bin/kafka-topics.sh --create --topic {{ item }} --replication-factor 2 --partitions 2 --bootstrap-server localhost:9092
+  ignore_errors: true
+  run_once: true
+  ignore_errors: yes
+  loop:
+  - wordpress
+  - nginx

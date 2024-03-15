@@ -1,0 +1,71 @@
+---
+
+- name: Download Logstash
+  ansible.builtin.get_url:
+    url: https://artifacts.opensearch.org/logstash/logstash-oss-with-opensearch-output-plugin-8.9.0-linux-x64.tar.gz
+    dest: /tmp/logstash.tar.gz
+  register: download
+
+- name: create user zookeeper
+  ansible.builtin.shell: useradd -r -c 'logstash service' logstash
+  ignore_errors: yes
+
+- name: Create required directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: logstash
+    group: logstash
+  when: download.changed
+  loop: 
+    - /opt/logstash
+    - /var/log/logstash
+
+- name: Logstash | Extract the tar file
+  ansible.builtin.unarchive:
+    src: /tmp/logstash.tar.gz
+    dest: /opt/logstash
+    remote_src: true
+    extra_opts:
+    - "--strip-components=1"
+    owner: logstash
+    group: logstash
+  when: download.changed
+
+- name: Create additional config directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: logstash
+    group: logstash
+  when: download.changed
+  loop: 
+    - /opt/logstash/config/conf.d
+
+- name: opy configuration files
+  ansible.builtin.template:
+    src: "{{ item.source }}"
+    dest: "{{ item.destination }}"
+    owner: logstash
+    group: logstash
+    mode: 0600
+  loop: 
+    - { source: 'logstash-ng.conf.j2', destination: '/opt/logstash/config/conf.d/logstash-ng.conf' }
+    - { source: 'logstash-wp.conf.j2', destination: '/opt/logstash/config/conf.d/logstash-wp.conf' }
+    - { source: 'pipelines.yml.j2', destination: '/opt/logstash/config/pipelines.yml' }
+    - { source: 'logstash.yml.j2', destination: '/opt/logstash/config/logstash.yml' }
+
+- name: Create systemd service
+  ansible.builtin.template:
+    src: logstash.service.j2
+    dest: /etc/systemd/system/logstash.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Start logstash
+  ansible.builtin.service:
+    name: logstash
+    state: restarted
+    enabled: true
+    daemon_reload: true

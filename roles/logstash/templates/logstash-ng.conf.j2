@@ -1,0 +1,21 @@
+input {
+    kafka {
+      type => "nginx"
+      bootstrap_servers => "{{ db1_ip }}:9092,{{ db2_ip }}:9092,{{ db3_ip }}:9092"
+      topics => "nginx"
+    }
+}
+
+
+output {
+  if [type] == "nginx" {
+    opensearch {
+      hosts => "https://{{ os1_ip }}:9200"
+      user => "admin"
+      password => "Test123"
+      index => "nginx-%{+YYYY.MM.dd}"
+      ssl_certificate_verification => false
+    }
+  }
+}
+
