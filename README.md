@@ -17,7 +17,7 @@ terraform init
 
 terraform terraform plan
 
-Создание и настройка кластера описана в
+Создание и настройка кластера описана wordpress в
 
 https://github.com/gi949/homework_lesson4
 
