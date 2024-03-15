@@ -31,7 +31,15 @@ Logstash будем разворачивать на ВМ db2.
 
 Filebeat  будем разворачивать на ВМ lb1, lb2, bs1 и bs2.
 
+Устанавливаем и настраиваем кластер kafka
 
+ansible-playbook kafka_ins.yml
+
+Подключаемся к ВМ db1 и проверяем создание топиков:
+
+![kafka-1](https://github.com/gi949/homework_lesson8/assets/94520051/222c8256-9ab8-4954-b054-8e09c69d4bb3)
+
+Устанавливаем и настраиваем кластер kafka
 
 
 
