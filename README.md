@@ -55,6 +55,25 @@ ansible-playbook filebeats_ins.yml
 
 Создаем индекс для логов из топика nginx
 
+![nginx-1](https://github.com/gi949/homework_lesson8/assets/94520051/c7357132-2b40-4b2b-8a2a-d70a035fbf93)
+
+![nginx-2](https://github.com/gi949/homework_lesson8/assets/94520051/7a509204-4df8-46f7-a40c-37d568dd670c)
+
+![nginx-3](https://github.com/gi949/homework_lesson8/assets/94520051/5eb854fe-c540-4d93-9b1a-affdcdf3b6bd)
+
+![nginx-4](https://github.com/gi949/homework_lesson8/assets/94520051/915b3b7f-94af-4c72-a7a4-6327832fdb0b)
+
+В меню Discover смотрим логи nginx
+
+![nginx-5](https://github.com/gi949/homework_lesson8/assets/94520051/b0955cc6-fb9f-4021-afd4-c21e25dc9b80)
+
+Аналогично создаем индекс для логов из топика wordpress, в меню Discover смотрим логи wordpress
+
+![wordpress-1](https://github.com/gi949/homework_lesson8/assets/94520051/fb5ad9f1-e698-4241-a3f1-93283f3567fd)
+
+![wordpress-2](https://github.com/gi949/homework_lesson8/assets/94520051/55feae42-036e-4d42-a491-6cae9eced08a)
+
+
 
 
 
