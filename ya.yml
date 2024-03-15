@@ -1,0 +1,45 @@
+[lb]
+lb1 ansible_host= topic=nginx
+lb2 ansible_host= topic=hginx
+
+[bs]
+bs1 ansible_host= topic=wordpress
+bs2 ansible_host= topic=wordpress
+
+[db]
+db1 ansible_host=
+
+[fs]
+gfs ansible_host=
+
+[web]
+bs1
+bs2
+
+[os]
+os1 ansible_host=
+os2 ansible_host=
+os3 ansible_host=
+
+[kb]
+kb1 ansible_host=
+
+[flbit]
+lb1 flagent=lb
+lb2 flagent=lb
+bs1 flagent=web
+bs2 flagent=web
+
+[kf]
+db1  id=1
+db2 ansible_host= id=2
+db3 ansible_host= id=3
+
+[jv]
+os[1:3]
+db[1:3]
+kb1
+
+[logstash]
+db2
+

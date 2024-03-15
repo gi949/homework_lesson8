@@ -1,0 +1,8 @@
+---
+
+- name: java install
+  hosts: jv
+  become: true
+  roles:
+    - jv_ins
+

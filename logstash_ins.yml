@@ -1,0 +1,8 @@
+---
+
+- name: java install
+  hosts: logstash
+  become: true
+  roles:
+    - logstash
+

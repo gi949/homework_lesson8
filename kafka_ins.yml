@@ -1,0 +1,8 @@
+---
+
+- name: java install
+  hosts: kf
+  become: true
+  roles:
+    - kafka_ins
+
